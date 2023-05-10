@@ -26,7 +26,8 @@ function firstLoop(pathToInteractionFiles) {
     //append the file name so it's included with the output and spread the intereaction counts into the object too
     const totalInteraction = {
       filename: filename,
-      ...countInteractions(jsonData)
+      ...countInteractions(jsonData),
+      total_interaction_count:jsonData.length
     };
     
     output.push(totalInteraction)
