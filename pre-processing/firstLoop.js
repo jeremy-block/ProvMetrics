@@ -23,10 +23,11 @@ function firstLoop(pathToInteractionFiles) {
     //pre-process by cleaning up the keys.
     const jsonData = cleanup.correctKeys(originalJsonData);
     
-    //count the intereactions
-    const totalInteraction = countInteractions(jsonData);
-    //append the file name so it's included with the output.
-    totalInteraction["filename"] = filename
+    //append the file name so it's included with the output and spread the intereaction counts into the object too
+    const totalInteraction = {
+      filename: filename,
+      ...countInteractions(jsonData)
+    };
     
     output.push(totalInteraction)
   }
