@@ -1,11 +1,11 @@
-const reader = require("./modules/filereader");
 const saveJsonToCsvFile = require("./modules/saveJsonToCsvFile")
+const pass1 = require("./pre-processing/firstLoop")
 
-let outputfilename = "testing"
+let outputfilename = "dataset1"
 
-const jsonData = reader(
-  "data/Dataset_1/User Interactions/Arms_P1_InteractionsLogs.json"
-);
-console.log(jsonData)
+//loop over the data in a folder.
+firstLoopData = pass1.firstLoop("data/Dataset_1/User Interactions/");
+// console.log(firstLoopData)
 
-saveJsonToCsvFile(outputfilename, jsonData);
+//save the data as a csv file.
+saveJsonToCsvFile(outputfilename, firstLoopData);
