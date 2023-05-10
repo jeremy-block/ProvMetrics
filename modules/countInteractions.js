@@ -8,8 +8,8 @@ function renameKeysWithCount(obj) {
 
   for (const key in obj) {
     if (obj.hasOwnProperty(key)) {
-      //todo: remove spaces and use _ instead.
-      const newKey = "total_" + key + "_count";
+      const convertToUnderscoreLowercase = (str) => str.replace(/ /g, "_").toLowerCase();
+      const newKey = "total_" + convertToUnderscoreLowercase(key) + "_count";
       renamedObj[newKey] = obj[key];
     }
   }
