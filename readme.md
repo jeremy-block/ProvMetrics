@@ -7,7 +7,7 @@ This project aims to quantify the 'goodness' of someone's analysis in an investi
 Clone the repository to your local machine using the command `git clone https://github.com/your_username/Investigation-Analysis-Metrics.git`
 Navigate to the project directory using the command `cd ProvMetrics`
 
-Install the required dependencies by running the command
+Before running any other scripts, Install the required dependencies by running the command
 
 ```sh
 
@@ -17,16 +17,15 @@ npm install
 
 ## Usage
 
-Prepare a CSV file containing the interaction history of the people doing investigations.
-Run the main script by executing node main.js in your terminal or command prompt.
-The script will prompt you to enter the name of the CSV file containing the interaction history data.
-Once the file is loaded, the script will calculate different analysis metrics and display them on the console.
+Prepare a folder containing the interaction history logs of the people doing investigations (JSON format. Each document is a session).
+Run the main script by executing `node controller.js` in your terminal or command prompt.
+The script will load in the data, calculate metrics and report the results in the output folder.
 
 ## Available Metrics
 
 The following analysis metrics are calculated by the script:
 
-**None at this time**
+**Interaction Counts.**
 
 Additional information about each metric can be found in the [metric description](modules/metricdescription.md) file in the `modules` folder.
 
@@ -34,17 +33,16 @@ Additional information about each metric can be found in the [metric description
 
 The following are metrics we hope to calculate in the near future.
 
-**Interaction count**: The total number of interactions.
-
-**Average response time**: The average time taken to respond to an interaction.
-
-**Resolution rate:** The percentage of interactions that were resolved.
-
-**First response time**: The time taken to respond to the first interaction.
-
-**Wait time**: The time elapsed between the last interaction from the user and the first response from the investigator.
-
-**Handling time**: The time elapsed between the first response from the investigator and the resolution of the interaction.
+- **Interaction Rate** of events over the session (Search, document opens, topics covered, etc.)
+  - Copy and Paste events to make notes
+- **Breadth** vs **Depth** - many different topics, or mostly focused on one topic.
+- Data **coverage** - of the topics they touched, how well did they cover each topic?
+- Query Behavior
+  - **Efficiency** of queries - number of results returned per query
+  - **Cycles** - repeated searches for similar topics - Searching for the same things - semantic similarity of words (**synonyms**), **Documents** (e.g., returning to the same document), language (**roots/endings**).
+  - Query Activity rate - **Bursts** of activity - the rate of events - were they all at once or more spread out? Also, when did they occur? What can we learn about the events that happen in bursts vs those that happen in between?
+  - **Filtering** of queries (manual sorting, secondary search behavior, some other way to reduce the dimensions/remove hundreds of columns for a search)
+- **Uniqueness** - looking across all the sessions in a dataset, how similar are the topics being covered? Is this session more or less unique from the others?
 
 ### Contributing
 

@@ -17,6 +17,10 @@ function renameKeysWithCount(obj) {
   return renamedObj;
 }
 
+//todo: calculate the number of unique documents open.
+
+//todo: account for mistakes by also considering the interactions that happen within a specifified threshhold to account for mistakes or mis-clicks.
+
 /**
  * 
  * @param {array of interactions} objects - the interactions to loop over and count.

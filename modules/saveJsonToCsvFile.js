@@ -1,6 +1,8 @@
 const createCsvWriter = require("csv-writer").createObjectCsvWriter;
 const fs = require("fs");
 
+//todo: handle when json data has an array of values or is ill formed.
+
 function saveJsonToCsvFile(fileName, jsonData) {
   fileName = "./output/" + fileName + ".csv";
   try {

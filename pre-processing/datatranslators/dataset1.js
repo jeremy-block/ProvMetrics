@@ -20,6 +20,9 @@ function correctKeys(jsonData, keyToChange = "interactionType", newKey = "type")
     return jsonData;
 }  
   
+//todo: Write a thresholding function that removes/reduces events that are too close together to be meaningful.
+//todo: find some way to prioritize which event types are kept.
+
 module.exports = {
 correctKeys
 };
