@@ -32,8 +32,6 @@ if (isTesting) {
     };
 }
 
-// let outputfilename = "dataset1"
-
 for (datasetKey in dataFolders) {
     //loop over the interaction data in a folder.
     interactionData = pass1.firstLoop(
