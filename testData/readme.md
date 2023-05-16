@@ -4,7 +4,7 @@ Here are some details about the designed data files in this folder:
 
 ## File names and properties
 
-1. Nuller - 0 events - just an empty interaction array.
+1. **Nuller** - 2 events - no interactions just click end study.
 2. Distracted - Mistake and misclick file where multiple interactions happen back to back but should be grouped together.
 3. Repeat Searcher - 3 searches repeated with some interactions between searches.
 4. Repeat Reader - Reading the same document multiple times.
@@ -20,4 +20,4 @@ Here are some details about the designed data files in this folder:
 14. Burster - Run's the same query over and over again. 3 in rapid succession, and 3 with some time between events.
 15. Irrelevanter - Only searching for terms un-related to the challenge.
 
-`The data has not been created at this time.`
+Most of the data has not been created at this time. Bolded titles exist in the `interactions` folder.
