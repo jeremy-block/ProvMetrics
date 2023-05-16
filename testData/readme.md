@@ -1,4 +1,4 @@
-# test data overview
+# Test data overview
 
 Here are some details about the designed data files in this folder:
 
@@ -11,7 +11,7 @@ Here are some details about the designed data files in this folder:
 5. Repeat Lexicaler - Searching for 3 topics based on the topic's synonyms.
 6. Fixated - Does multiple searches and focuses on one topic.
 7. Explorer - Open every document - should be 100% exploration.
-8. Digger - Does a search and reads every document related to that term.
+8. **Digger** - Does a search for 'arms' and reads every document (27) related to that term.
 9. Inefficient Queryer - Search results return either 0 results or 1 result
 10. Maximal Queryer - search results return almost all the results.
 11. Efficient Queryer - search results return 5 to 10 results.
