@@ -1,6 +1,9 @@
-const countInteractions = require("../modules/countInteractions");
 const reader = require("../modules/filereader");
 const cleanup = require("./datatranslators/dataset1");
+const countInteractions =  require("../modules/countInteractions");
+const ratioMaker = require("../modules/ratioMaker");
+const renamer = require("../modules/renamer");
+
 
 /**
  * 
@@ -26,13 +29,16 @@ function firstLoop(pathToInteractionFiles) {
     //pre-process by cleaning up the keys.
     const jsonData = cleanup.correctKeys(originalJsonData);
 
+    const interactionCounts = countInteractions.countObjectsByType(jsonData);
+    const interactionRatios = ratioMaker.countsToRatios(interactionCounts, jsonData.length)
+
     //append the file name so it's included with the output and spread the intereaction counts into the object too
     const totalInteraction = {
       filename: filename,
-      ...countInteractions(jsonData),
+      ...renamer.renameKeysWithCount(interactionCounts),
+      ...renamer.renameKeysWithRatio(interactionRatios),
       total_interaction_count: jsonData.length,
     };
-    //todo: calculate rates of interaction and add to output array.
 
     //todo: create a module that get's a list of the documents opened (later also include timeings).
     //todo: create a module that get's a list of the queries made (later also include timeings).
