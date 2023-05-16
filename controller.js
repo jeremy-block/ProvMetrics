@@ -1,13 +1,13 @@
 const saveJsonToCsvFile = require("./modules/saveJsonToCsvFile")
 const pass1 = require("./pre-processing/firstLoop")
 
-const isTesting = false
+const isTesting = true
 let dataFolders = {}
 
 if (isTesting) {
     dataFolders = {
         testData: {
-            interactions: "testData/interactions",
+            interactions: "testData/interactions/",
             cleaner: "pre-processing/datatranslators/dataset1.js",
             documents: "data/Dataset_1/Documents/Documents_Dataset_1.json",
         }

@@ -1,0 +1,37 @@
+[
+    {
+        "timestamp": 7.245,
+        "type": "end-study",
+        "msg": "1_9bdf6d71",
+        "elem_id": {
+            "windowSize": [
+                1674,
+                1022
+            ],
+            "monitorResolution": [
+                1920,
+                1200
+            ],
+            "availResolution": [
+                1920,
+                1102
+            ],
+            "pixelRatio": 2,
+            "zoom": 200,
+            "browser": "Apple Safari",
+            "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.2 Safari/605.1.15"
+        },
+        "doc_id": null,
+        "pos": null
+    },
+    {
+        "timestamp": 7.245,
+        "type": "end-notes",
+        "msg": [
+            ""
+        ],
+        "doc_id": [
+            "noteSolution"
+        ]
+    }
+]

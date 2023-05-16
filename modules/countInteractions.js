@@ -10,18 +10,26 @@
  */
 function countObjectsByType(objects) {
   const counts = {};
+  // Check if objects is an array and has a length greater than 1
+  if (!Array.isArray(objects) || objects.length <= 1) {
+    // Create a new object based on objects
+    const newObj = { ...objects };
 
-  for (const obj of objects) {
-    const objectType = obj.type;
+    return newObj;
+  } else {
 
-    if (counts.hasOwnProperty(objectType)) {
-      counts[objectType]++;
-    } else {
-      counts[objectType] = 1;
+    for (const obj of objects) {
+      const objectType = obj.type;
+      
+      if (counts.hasOwnProperty(objectType)) {
+        counts[objectType]++;
+      } else {
+        counts[objectType] = 1;
+      }
     }
+    
+    return counts;
   }
-
-  return counts;
 };
 
 module.exports = { countObjectsByType };
