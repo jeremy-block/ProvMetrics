@@ -1,5 +1,4 @@
 const reader = require("../modules/filereader");
-const cleanup = require("./datatranslators/dataset1");
 const countInteractions =  require("../modules/countInteractions");
 const ratioMaker = require("../modules/ratioMaker");
 const renamer = require("../modules/renamer");
@@ -9,15 +8,12 @@ const renamer = require("../modules/renamer");
  * 
  * @param {string} pathToInteractionFiles 
  * @returns An array of objects. one object for each file in the path provided.
- * todo: add support for multiple datasets, with an array of tuples: [folder,  relevant pre-processor scripts].
  */
-function firstLoop(pathToInteractionFiles) {  
+function firstLoop(pathToInteractionFiles, cleanerModulePath) { 
   //Identify the list of file names to process in the folder provided to first Loop
   const fileNameList = reader.getFileNamesInFolder(pathToInteractionFiles);
   // console.log(fileNameList);
-
-  //todo: add try/catch to ensure there are only .json interaction files to process.
-
+    
   //stub for output
   const output = []
   //loop over the files in the the spefified directory
@@ -25,9 +21,11 @@ function firstLoop(pathToInteractionFiles) {
     //read file
     const originalJsonData = reader.importJsonFile(
       pathToInteractionFiles + filename
-    );
-    //pre-process by cleaning up the keys.
-    const jsonData = cleanup.correctKeys(originalJsonData);
+      );
+      //pre-process by cleaning up the keys.
+      const cleaner = require("../"+cleanerModulePath);
+      const jsonData = cleaner.correctKeys(originalJsonData);
+      //todo: add try/catch to ensure there are only .json interaction files to process.
 
     const interactionCounts = countInteractions.countObjectsByType(jsonData);
     const interactionRatios = ratioMaker.countsToRatios(interactionCounts, jsonData.length)
