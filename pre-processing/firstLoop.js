@@ -1,5 +1,5 @@
 const reader = require("../modules/filereader");
-const countInteractions =  require("../modules/countInteractions");
+const interpreter = require("/interpreter")
 const ratioMaker = require("../modules/ratioMaker");
 const renamer = require("../modules/renamer");
 
@@ -27,7 +27,7 @@ function firstLoop(pathToInteractionFiles, cleanerModulePath) {
       const jsonData = cleaner.correctKeys(originalJsonData);
       //todo: add try/catch to ensure there are only .json interaction files to process.
 
-    const interactionCounts = countInteractions.countObjectsByType(jsonData);
+    const [ documentList, SearchList, interactionCounts ] = interpreter.extractEvents(jsonData);
     const interactionRatios = ratioMaker.countsToRatios(interactionCounts, jsonData.length)
 
     //append the file name so it's included with the output and spread the intereaction counts into the object too
@@ -38,8 +38,6 @@ function firstLoop(pathToInteractionFiles, cleanerModulePath) {
       total_interaction_count: jsonData.length,
     };
 
-    //todo: create a module that get's a list of the documents opened (later also include timeings).
-    //todo: create a module that get's a list of the queries made (later also include timeings).
     //todo: create a module that takes the documents opened and identifies the topics
     //todo: include a list of the topics explored in the output.
     //todo: create a module that calculates the overlap between a search query and the documents opened. (ideally this should look at the timing of events too)
