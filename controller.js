@@ -8,8 +8,8 @@ if (isTesting) {
     dataFolders = {
         testData: {
             interactions: "testData/interactions/",
-            cleaner: "pre-processing/datatranslators/dataset1.js",
-            documents: "data/Dataset_1/Documents/Documents_Dataset_1.json",
+            cleaner: "pre-processing/datatranslators/testData.js",
+            documents: "testData/documents/TestData-documents.json",
         }
     }    
 } else {

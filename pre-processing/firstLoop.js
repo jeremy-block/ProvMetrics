@@ -1,5 +1,5 @@
 const reader = require("../modules/filereader");
-const interpreter = require("/interpreter")
+const interpreter = require("../pre-processing/interpreter")
 const ratioMaker = require("../modules/ratioMaker");
 const renamer = require("../modules/renamer");
 
