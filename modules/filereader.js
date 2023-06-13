@@ -39,3 +39,24 @@ function importJsonFile(fileName) {
 }
 
 module.exports = { importJsonFile, getFileNamesInFolder };
+
+// async function importJsonFile(fileName, debug = false) {
+//   try {
+//     if (debug)
+//       console.log("Currently in this directory", fs.readdirSync(fileName));
+//     if (debug) console.log('Looking for file named: "', fileName, '"');
+//     // Check if the file exists
+//     if (!fs.existsSync(fileName)) {
+//       throw new Error(`File ${fileName} does not exist`);
+//     }
+
+//     // Read the file and parse its contents as JSON
+//     const fileContents = await fs.readFileSync(fileName);
+//     const jsonData = await JSON.parse(fileContents);
+
+//     return jsonData;
+//   } catch (err) {
+//     console.error(err);
+//     return null;
+//   }
+// }
