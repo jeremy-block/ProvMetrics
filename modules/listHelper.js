@@ -181,7 +181,33 @@ function minMaxNormalization(arr, debug = false) {
       return null
     }
 }
-module.exports = { calcMean, calcStdDev, calcOutlierness, calcHubness, minMaxNormalization };
+
+// Returns the ratio of terms in ther first list that are in the second list. 1 means all the terms are in the bigger list, 0 means none of the terms are in the list. 
+function intersectLists(smallTermList, withinTermList, debug = false) {
+  let overlappingTerms = 0;
+  // checkInput(smallTermList)
+  // checkInput(withinTermList)
+  if(debug) console.log("intersecting Lists of words. \nAre ",smallTermList, "in", withinTermList, "\n\t That is, are the",smallTermList.length,"in the",withinTermList.length )
+    for (let term = 0; term < smallTermList.length; term++) {
+      const element1 = smallTermList[term];
+      for (let term2 = 0; term2 < withinTermList.length; term2++) {
+        const element2 = withinTermList[term2];
+        if (areValuesFuzzyMatch(element1, element2))
+        overlappingTerms = overlappingTerms + 1
+      }
+    }
+    if (overlappingTerms == 0) {
+      return overlappingTerms;
+    } else {
+      return overlappingTerms / smallTermList.length
+    }
+}
+  
+function removeDuplicates(list) {
+  return [...new Set(list)];
+}
+
+module.exports = { calcMean, calcStdDev, calcOutlierness, calcHubness, minMaxNormalization, intersectLists, removeDuplicates };
 
 
 function testHubness() {
@@ -269,3 +295,10 @@ function testMinMaxNormalization() {
  
 }
 // testMinMaxNormalization();
+
+function testRemoveDuplicates() {
+  const listWithDuplicates = [1, 2, 3, 4, 1, 2, 5, 3, 6];
+  const listWithoutDuplicates = removeDuplicates(listWithDuplicates);
+  console.log(listWithoutDuplicates); // Output: [1, 2, 3, 4, 5, 6]
+}
+// testRemoveDuplicates()

@@ -4,6 +4,7 @@ const { WordNet } = natural;
 const { importJsonFile } = require("../modules/filereader");
 const { listOfObjectValues, ListOfObjectKeys } = require("../modules/objHelper");
 const { spawnSyncProcess } = require("./runPythonFunction");
+const { intersectLists, removeDuplicates, calcMean } = require("../modules/listHelper");
 
 
   //todo: write a function that determines the similarity of search phrases by lemetizing/stemming search terms.
@@ -113,19 +114,19 @@ async function getSimilarityWordsProportion(termList, debug = false) {
   }
         
 /**
- *
+ * This function removes the duplicates in the list of search terms and gives a value for how many searches were exact repeats.
  * @param {Object} termList - An object of times and terms searched for.
- * @returns a simple ratio. It removes the duplicates in the list of search terms and gives a value for how many searches were exact repeats.
+ * @returns an object with two properties. repeatedSearchCount reports the number of searches that are exact matches. repeatedSearchRatio provides that value as a ratio(i.e., the proportion of earches complete that are repeated.) 
  */
-function ratioOfUniqueSearches(termList) {
-  if (Object.keys(termList).length === 0) {
-    return null;
-  } else {
-    const types = new Set(Object.values(termList));
-    // console.log(types, types.size, termList, Object.keys(termList).length);
-    const similarityScore = types.size / Object.keys(termList).length;
-    return similarityScore;
-  }
+function calcRepeatedSearches(termList, debug = false) {
+  const types = new Set(Object.values(termList));
+  if (debug) console.log(types, types.size, termList, Object.keys(termList).length);
+  const similarityRatio = 1 - (types.size / Object.keys(termList).length);
+  const repeatedSeachesCount = (Object.keys(termList).length - types.size);
+  return {
+    "repeatedSeachCount": repeatedSeachesCount,
+    "repeatedSearchRatio": similarityRatio,
+  };
 }
 
 
@@ -174,28 +175,175 @@ function calculatePeriodicity(timeIntervals, totalDuration, debug=false) {
 }
 
 //todo Calculate a value that quantifies the number of events that are outlires (1.5x standard deviations from the mean) and maybe recalculate the standar deviation without them?
+/**
+ * Conducts a search through the array of document objects and returns the list of document names that would be returned for a search conducted on the dataset.
+ * @param {String} term The Term to look for in the original document dataset
+ * @param {Array of Object <documents>} documentCorpus The list of documents to search. By default this function searches the "contents" and "title" properties of a document
+ * @param {boolean} debug true to print logs
+ * @returns a list of document IDs that would be returned for the search term.
+ */
+function reverseSearch(term, documentCorpus, debug = false) {
+  // console.log("🚀 ~ file: searchMetrics.js:180 ~ reverseSearch ~ documentCorpus:", documentCorpus)
+  const matchingObjects = [];
+  const regex = new RegExp(term, "i"); // 'i' flag for case-insensitive matching
+
+  for (const doc of documentCorpus) {
+    if (
+      // If the term is in the body or the title text
+      (doc.contents && regex.test(doc.contents.toLowerCase())) ||
+      (doc.title && regex.test(doc.title.toLowerCase()))
+    ) {
+      const docName = doc.id
+      matchingObjects.push(docName);
+    }
+  }
+  return matchingObjects;
+}
+
+//todo Consider more than just opened documents? what about documents dragged around or hovered without opening? it would help to score different types of interactions more or less highly.
+/**
+ * creates a list of document names that were opened between two time values.
+ * @todo inclusion criteria (including a document at start time or end time) has not been accuratly tested. It works for the general case, but may not include opened documents with a time that perfectly matches start or end time.
+ * @param {number} startTime a time value to start from
+ * @param {number} endTime a time value to end searching for
+ * @param {object <time:docs>} documentObj an object of time keys with a document as the value. This represents the document open events.
+ * @returns a list of document ids that were read between the two times.
+ */
+function getDocNamesBetweenTimes(startTime, endTime, documentObj) {
+  times = ListOfObjectKeys(documentObj)
+  startIndex = 0
+  endIndex = 0
+  outputNames = []
+  for (let index = 0; index < times.length; index++) {
+    const checkTime = times[index];
+    if (checkTime > endTime) {
+      endIndex = index
+    }
+    if (checkTime < startTime) {
+      startIndex = index
+    }
+  }
+  for (let getter = startIndex; getter < endIndex; getter++) {
+    const name = documentObj[times[getter]];
+    outputNames.push(name)
+  }
+  return outputNames
+}
+
+//todo Only calculate an overlap for searches that return a value. If the search returns no documents. it shouldn't count, right?
+//todo: create a module that calculates the overlap between a search query and all the documents opened accross the whole time. It would calculate over the whole time how much overlap there is instead of just between now and the next search. (ideally this should have a multiplier for the relative timing of events too)
+/**
+ * 
+ * @param {object <time:search>} searchObj object of searches with the timings of those searches as the keys
+ * @param {object <time:docs>} documentObj object of document names with the timings of when those documents were opened as keys
+ * @param {Array of object <documents>} investigationDataset array of document objects that are inspected. Passed through to the reverseSearch() function.
+ * @param {boolean} debug flag to control the display of debug messages
+ * @returns an object with two properties. avgOverlap is the average amount of overlap between a search being run and the number of documents explored. avgEfficency is the average number of documents returned for a search.
+ */
+function calcOverlappingSearches(searchObj, documentObj, investigationDataset, debug = false) {
+  const times = ListOfObjectKeys(searchObj);
+  if(debug) console.log("🚀 ~ file: searchMetrics.js ~ calcOverlappingSearches ~ times: Total Searches Complete", times.length)
+  const docTimes = ListOfObjectKeys(documentObj)
+  //Handle the case where more documents are opened after the last search. Push the longest time to the times array
+  if (times[times.length - 1] < docTimes[docTimes.length - 1]) {
+    if (debug) console.log("Documents open after last search time. Adding",docTimes[docTimes.length-1], "to the times array")
+    times.push(docTimes[docTimes.length - 1]);
+  }
+  //List of how much overlap each term has with the documents explored before the next search.
+  let overlapAmount = []
+  
+  //list of how many results are returned for each search completed.
+  let searchEfficiency = []
+
+  //for each search term.
+  for (let t = 0; t < times.length - 1; t++) {
+    const startTime = times[t];
+    const endTime = times[t + 1]; 
+    
+    //list of documents opened between two times. 
+    //then remove duplicate document names to be fair to the search counts.
+    const docNameList = removeDuplicates(
+      getDocNamesBetweenTimes(
+      startTime,
+      endTime,
+      documentObj
+    ));
+    if (debug) console.log("🚀 ~ file: searchMetrics.js ~ calcOverlappingSearches ~ docNameList:", docNameList.length,"documents open between", startTime, "and", endTime, "Include the following:", docNameList)
+    
+    //Get the search term conducted in this time period
+    const term = searchObj[times[t]];
+    if (debug) console.log("🚀 ~ file: searchMetrics.js ~ calcOverlappingSearches ~ term:", term)
+    
+    //Reverse the search and get a list of document names associated with the search term.
+    const searchResults = reverseSearch(term, investigationDataset);
+    if(debug) console.log("🚀 ~ file: searchMetrics.js ~ calcOverlappingSearches ~ searchResults:",searchResults.length,"Documents match a search for",("\'"+term+"\'."),"They are", searchResults)
+
+    //compare the two lists of document ids
+    const overlap = intersectLists(searchResults, docNameList);
+    if (debug) console.log("🚀 ~ file: searchMetrics.js ~ calcOverlappingSearches ~ overlap: \n\tDocuments Matching Search Term:", searchResults.length,"\n\tDocuments opened before next search:", docNameList.length, "\n\tTherefore Overlap is:",overlap);
+    //record the overlap for the term.
+    overlapAmount.push(overlap);
+    searchEfficiency.push(searchResults.length)
+  }
+  //return the average amount of overlap among the search performed and the documents explored.
+  return {
+    "avgOverlap": calcMean(overlapAmount),
+    "avgEfficency": calcMean(searchEfficiency)
+  };
+}
 
 
-module.exports = { ratioOfUniqueSearches, getSimilarityWordsProportion, calculatePeriodicity };
+
+module.exports = {
+  calcRepeatedSearches,
+  getSimilarityWordsProportion,
+  calculatePeriodicity,
+  reverseSearch,
+  calcOverlappingSearches,
+};
 
 async function test() {
   let finished = await getSimilarityWordsProportion({ "1": "cat", "2.3": "dog", "3.2": "lion", "4.5": "elephant" }); //{ 123: "happy", 456: "sad", 789: "test" });\
   console.log("🚀 ~ file: searchMetrics.js:288 ~ test ~ finished:", finished)
-  
 }
 // test()
 
-
-
-
-
-
-
-
-
-
-
-
+// async function testReverseSearch() {
+//   const searches = { "1": "telephone", "2.3": "bank", "3.2": "Bank", "4.5": "Pay" }
+//   const docs = [
+//     {
+//       id: "armsdealing1",
+//       date: "Feb 2008",
+//       title: "drilling equipment scheduled to arrive, Kiev to Iran",
+//       contents:
+//         "US GOVERNMENT TELEPHONE INTERCEPT: 5 FEBRUARY 2008<br><br>Call placed from Kiev, Ukraine to Tabriz, Iran.  <br><br> The call from Kiev was from a prepaid cell phone using an unlisted ID number supplied by an Internet café.  The receiver of the call was at the address: 24 Janbazan St, West Ajerbaijan, Tabriz, Iran.  This address is the residence of Sattari Khurshid. The caller says, “The drilling equipment is scheduled to arrive at Urmia on the 12th.”  The receiver says, “All is well then.  Soltan will handle all the arrangements.”  ",
+//     },
+//     {
+//       id: "armsdealing2",
+//       date: "Mar 2008",
+//       title: "Maulana Haq Bukhari Bank Transaction",
+//       contents:
+//         "REPORT DATE:    30 March 2008 [US GOVERNMENT COMMUNICATION INTERCEPT]: <br><br>[Note: The originating account is believed to belong to Maulana Haq Bukhari, per Pakistani Criminal Investigation Unit, Karachi Division]<br><br>Bank funds transfer information:<br><br>Transaction Identification Number:<br>From:  \t\tEBILAEAD 51 0568 8001 1575 1710 0<br>To:\t\t\tABNAPKKACKH 4230-1840-001194396527<br>Date:    \t\t02-11-08 11:29:16<br>Amount:\t\tPAK1571649.15",
+//     },
+//     {
+//       id: "armsdealing3",
+//       date: "June 2008",
+//       title: "I hope we can do business shortly, Borodinski",
+//       contents:
+//         "US GOVERNMENT TELEPHONE INTERCEPT: 24 JUNE 2008<br><br>A phone call was intercepted from a pay phone at the Domodedovo International Airport to a street phone in Nonthaburi on June 24, 2008. <br><br> The call on June 24, 2008 was from Arkadi Borodinski to Boonmee Khemkhaeng or Suramongkol Virote.  The caller says [in English with a Russian accent]: “I am encouraged by what I hear from my sources about you.”  The receiver replies [also in English]: “I hope we can do business shortly.” ",
+//     }];
+//   const searchResults = []
+//   for (const time in searches) {
+//     if (Object.hasOwnProperty.call(searches, time)) {
+//       const term = searches[time];
+//       searchResults.push(reverseSearch(term, docs))
+//     } else {
+//       console.log("no term")
+//     }
+//   }
+// console.log("🚀 ~ file: searchMetrics.js:233 ~ testReverseSearch ~ searchResults:", searchResults)
+// }
+// testReverseSearch()
 
 
 
@@ -218,8 +366,8 @@ async function test() {
 //       }
 //     }
 
-//     const similarityScore = synonyms.size / Object.keys(termList).length;
-//     return similarityScore;
+//     const similarityRatio = synonyms.size / Object.keys(termList).length;
+//     return similarityRatio;
 //   } catch (error) {
 //     console.error(error);
 //     return 0;
@@ -244,8 +392,8 @@ async function test() {
 //       }
 //     }
 
-//     const similarityScore = synonyms.size / Object.keys(termList).length;
-//     return similarityScore;
+//     const similarityRatio = synonyms.size / Object.keys(termList).length;
+//     return similarityRatio;
 //   } catch (error) {
 //     console.error(error);
 //     return 0;
@@ -269,8 +417,8 @@ async function test() {
 //       }
 //     }
 
-//     const similarityScore = synonyms.size / Object.keys(termList).length;
-//     return similarityScore;
+//     const similarityRatio = synonyms.size / Object.keys(termList).length;
+//     return similarityRatio;
 //   } catch (error) {
 //     console.error(error);
 //     return 0;
@@ -411,7 +559,7 @@ async function test() {
 //     }
 
 //     // Function to calculate overall similarity score for a list of words
-//     function calculateSimilarityScore(wordList) {
+//     function calculateSimilarityRatio(wordList) {
 //       const numWords = wordList.length;
 
 //       // Handle edge case when there's only one word in the list
@@ -437,9 +585,47 @@ async function test() {
 //     }
 
 //     // Example usage
-//     const similarityScore = calculateSimilarityScore(words);
+//     const similarityRatio = calculateSimilarityRatio(words);
 
-//     console.log("Similarity score:", similarityScore);
+//     console.log("Similarity score:", similarityRatio);
 //   });
 // }
 // const runPythonScript = require("./runPythonFunction");
+
+
+
+// //untested - for each search completed, how many of the documents touched before the next search related to the search itself.
+// function calcOverlappingSearches(
+//   searchObj,
+//   interactions,
+//   documents,
+//   interactionTypes = ["reading", "open"],
+//   debug = false
+// ) {
+//   times = ListOfObjectKeys(searchObj);
+//   times.append(interactions[interactions.length - 1].time);
+//   console.log(
+//     "🚀 ~ file: searchMetrics.js:210 ~ calcOverlappingSearches ~ times:",
+//     times
+//   );
+//   const overlap = 0;
+//   //For each search time,
+//   for (let t = 0; t < times.length - 1; t++) {
+//     const startTime = times[t];
+//     const endTime = times[t + 1];
+//     const docNameList = getDocNamesBetweenTimes(
+//       startTime,
+//       endTime,
+//       documents,
+//       interactionTypes
+//     );
+//     const term = searchObj[times[t]];
+//     //todo spell check terms (simpleSpellCheck())
+//     searchResults = reverseSearch(term, documents);
+
+//     //compare the two lists of document ids
+//     const overlap = intersectLists(searchResults, docNameList);
+//     overlapAmount = overlapAmount + overlap / (times.length - 1); //Add a propostional equivlant amount of overlap to be added.
+//   }
+//   return overlapAmount;
+// }

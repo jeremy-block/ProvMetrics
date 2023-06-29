@@ -36,8 +36,9 @@ async function run() {
     for (datasetKey in dataFolders) {
         //loop over the interaction data in a folder.
         interactionData = await pass1.firstLoop(
-            dataFolders[datasetKey].interactions,
-            dataFolders[datasetKey].cleaner
+          dataFolders[datasetKey].interactions,
+          dataFolders[datasetKey].cleaner,
+          dataFolders[datasetKey].documents
         );
     
         //save the data as a csv file.

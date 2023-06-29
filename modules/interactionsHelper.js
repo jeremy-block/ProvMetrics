@@ -1,5 +1,7 @@
 //todo: calculate the number of unique documents open.
 
+//todo a function to provide list of objects and type name and recieve an object with time:id for when and what was interacted with.
+
 //todo: account for mistakes by also considering the interactions that happen within a specifified threshhold to account for mistakes or mis-clicks.
 
 /**
