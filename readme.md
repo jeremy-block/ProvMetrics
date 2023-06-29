@@ -15,6 +15,8 @@ npm install
 
 ```
 
+This script requires `python==3.10` and `spacy==5.3` - We recommend having python installed globally and use pip to install SpaCy. SpaCy is used for calculating the similarity of terms searched for in a dataset.
+
 ## Usage
 
 Prepare a folder containing the interaction history logs of the people doing investigations (JSON format. Each document is a session).
@@ -23,7 +25,7 @@ The script will load in the data, calculate metrics and report the results in th
 
 ## Available Metrics
 
-The following analysis metrics are calculated by the script:
+The following analysis metrics are calculated by the script: `controler.js`
 
 **Interaction Counts.**
 

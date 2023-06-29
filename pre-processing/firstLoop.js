@@ -4,7 +4,7 @@ const ratioMaker = require("../modules/ratioMaker");
 const renamer = require("../modules/renamer");
 const searchMetrics = require("./searchMetrics");
 
-
+//todo: this just calculates one vlaue for the entire interaction history for each user. It would be good to segment a user's period of time and look at how these values change at different time granularities.
 /**
  * 
  * @param {string} pathToInteractionFiles 
@@ -56,7 +56,7 @@ async function firstLoop(pathToInteractionFiles, cleanerModulePath, pathToDocume
       total_duration: totalDuration,
       repeat_searches: searchTermSimilarity.repeatedSeachCount,
       prop_repeat_searches: searchTermSimilarity.repeatedSearchRatio,
-      search_term_similary: searchSimilarity2,
+      search_term_similarity: searchSimilarity2,
       search_time_std_dev: searchPeriodicity,
       search_open_overlap: searchOverlapAndEfficency.avgOverlap,
       search_term_efficiency: searchOverlapAndEfficency.avgEfficency,
