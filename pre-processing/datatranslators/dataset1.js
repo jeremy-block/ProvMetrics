@@ -1,5 +1,6 @@
 const { correctKeys } = require("../../modules/correctKeys");
 const { correctTypes } = require("../../modules/correctTypes");
+const { extractEvents } = require("../../modules/interpreter");
 // Object of expected keys and the properties typically found in the interaction file
 // Key is the new key, Value is the proptery in interaction log.
 const interactionTranslation = {
@@ -10,7 +11,10 @@ const interactionTranslation = {
 };
 
 //todo: interaction type translation so "search" is identified.
-const interactionTypes = {}
+const interactionTypes = {
+  Search: "search",
+  Doc_open: "open-doc",
+};
 
 function clean(interactions) {
   interactions = correctKeys(interactions, interactionTranslation);
