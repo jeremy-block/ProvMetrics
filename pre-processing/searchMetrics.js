@@ -185,6 +185,7 @@ function calculatePeriodicity(timeIntervals, totalDuration, debug=false) {
 function reverseSearch(term, documentCorpus, debug = false) {
   // console.log("🚀 ~ file: searchMetrics.js:180 ~ reverseSearch ~ documentCorpus:", documentCorpus)
   const matchingObjects = [];
+  term = term.replace(/\\/g, "\\\\"); // replace "\" characters that sometimes appear with nothing.
   const regex = new RegExp(term, "i"); // 'i' flag for case-insensitive matching
 
   for (const doc of documentCorpus) {
