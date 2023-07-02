@@ -30,7 +30,7 @@ async function firstLoop(pathToInteractionFiles, cleanerModulePath, pathToDocume
       );
       //pre-process by cleaning up the keys.
       const cleaner = require("../"+cleanerModulePath);
-      const interactionEvents = cleaner.correctKeys(originalInteractionEvents);
+      const interactionEvents = cleaner.clean(originalInteractionEvents);
       //todo: add try/catch to ensure there are only .json interaction files to process.
       
     const [docTimeIDs, searchTimeTerms, interactionCounts] = interpreter.extractEvents(interactionEvents);
