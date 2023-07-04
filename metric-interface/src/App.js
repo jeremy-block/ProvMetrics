@@ -2,16 +2,30 @@
 import Vizzu from "vizzu";
 import VizzuModule from "vizzu/dist/cvizzu.wasm";
 import { data } from "./demoData";
-import { useRef, useEffect } from "react";
+import { useRef, useEffect, useState } from "react";
 
 Vizzu.options({ wasmUrl: VizzuModule });
 
 function App() {
-  const canvasRef = useRef(null);
+  const canvasRef = useRef();
+  const chartRef = useRef();
+  const [xDimensionState, setXDimensionState] = useState();
+
+  const dimensions = data.series
+    .filter((s) => s.type === "dimension")
+    .map((s) => s.name);
 
   useEffect(() => {
-    const chart = new Vizzu(canvasRef.current, { data });
-    chart.initializing.then((chart) =>
+    if (!chartRef.current) return;
+    chartRef.current.animate({
+      config: { channels: { x: { set: [xDimensionState] } } },
+    });
+  }, [xDimensionState]);
+
+  useEffect(() => {
+    if (chartRef.current) return; // this is needed because of Hot Module Replacement
+    chartRef.current = new Vizzu(canvasRef.current, { data });
+    chartRef.current.initializing.then((chart) =>
       chart.animate({
         config: {
           channels: {
@@ -24,11 +38,24 @@ function App() {
   }, []);
 
   return (
-    <canvas
-      ref={canvasRef}
-      id="myVizzu"
-      style={{ width: "800px", height: "480px" }}
-    />
+    <div id="wrapper">
+      <canvas ref={canvasRef} style={{ width: "800px", height: "480px" }} />
+      <div id="breakdownChooser">
+        <h2>Break it down by</h2>
+        {dimensions.map((dim) => {
+          return (
+            <button
+              onClick={() => {
+                setXDimensionState(dim);
+              }}
+              key={dim}
+            >
+              {dim}
+            </button>
+          );
+        })}
+      </div>
+    </div>
   );
 }
 
