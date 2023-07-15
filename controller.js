@@ -1,3 +1,4 @@
+const { normalizeNumericObjectValues } = require("./modules/objHelper")
 const saveJsonToCsvFile = require("./modules/saveJsonToCsvFile")
 const pass1 = require("./pre-processing/firstLoop")
 
@@ -41,8 +42,10 @@ async function run() {
           dataFolders[datasetKey].documents
         );
     
+        const normed = normalizeNumericObjectValues(interactionData)
         //save the data as a csv file.
         saveJsonToCsvFile(datasetKey, interactionData);
+        saveJsonToCsvFile(datasetKey+"_norm",normed)
     }
 
 }
