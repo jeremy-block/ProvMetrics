@@ -1,7 +1,13 @@
 const listOfObjectValues = (obj) => Array.from(Object.values(obj));
 
 const ListOfObjectKeys = (obj) => Array.from(Object.keys(obj));
-
+/**
+ * Takes a list of objects and converts the numeric values to be in the range from 0 -- 1
+ *
+ * @param {*} objects The list of objects with numeric properties
+ * @param {boolean} [keepColumns=true] - Boolean to overwrite the columns or make new ones. Defaults to make new ones.
+ * @return {*} A similar object to the original, with the columns overwritten or not.
+ */
 function normalizeNumericObjectValues(objects, keepColumns = true) {
   // Collect all possible numeric keys
   const numericKeys = objects.reduce((keys, obj) => {

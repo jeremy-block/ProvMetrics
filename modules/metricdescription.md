@@ -5,6 +5,7 @@ Below you can find a description for each metric as well as some comments about 
 - [Metric Descriptions](#metric-descriptions)
   - [Count Interactions - 0.1 - 06/29/2023](#count-interactions---01---06292023)
   - [Ratio Interactions - 0.1 - 06/29/2023](#ratio-interactions---01---06292023)
+  - [Norm Interactions - 0.1 - 07/14/2023](#norm-interactions---01---07142023)
   - [total\_interaction\_count - 0.1 - 06/29/2023](#total_interaction_count---01---06292023)
   - [total\_duration - 0.1 - 06/29/2023](#total_duration---01---06292023)
   - [repeat\_searches - 0.1 - 06/29/2023](#repeat_searches---01---06292023)
@@ -25,6 +26,13 @@ When an interaction is not recorded in an interaction log, a null value will be 
 Instead of the count of each interaction, this is a ratio of what proportion of all of their interactions are a specific type.
 Can be used to see the relative frequency of different interaction types across different interaction logs.
 When an interaction is not recorded in an interaction log, a null value will be returned to fill that space in the output spreadsheet.
+
+## Norm Interactions - 0.1 - 07/14/2023
+
+A post process module that works on numeric columns.
+These are duplicate columns of the other numeric columns.
+The values here adjust for all the values in the table and converts the numeric values to be in the range from 0 -- 1.
+This makes it easier to compare different data columns across analysis sessions.
 
 ## total_interaction_count - 0.1 - 06/29/2023
 

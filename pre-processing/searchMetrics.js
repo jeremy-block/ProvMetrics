@@ -71,7 +71,8 @@ async function simpleSpellCheck(arr, debug = false) {
 // simpleSpellCheck(["deeling","Keyna", "Princess", "pikles", "tounge"],true); //[ 'eeling', 'kenya', 'princess', 'pickles', 'lounge' ]
 
 
-
+//todo: instead of SpaCy consider doing something simple with Latent Semantic Analysis (LSA) of the TASA corpus (This corpus was developed by Touchtone Applied Science Associates (Zeno, Ivens, Millard, & Duvvuri, 1995), and consists of a collection of texts appropriate for students between third grade and the first year of college.) 
+//todo or the same analyses using the Word Association Space 
 
 /**
  *uses SpaCy's Symilarity functions to calculate the similarity of the words in a list. I believe that SpaCy considers synonyms and semantic meaning of words. Not sure how it worries about Part of Speech tagging, if at all since these words are without context.
