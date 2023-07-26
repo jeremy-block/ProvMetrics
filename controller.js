@@ -38,17 +38,18 @@ async function run() {
     const combinedMetrics = [];
     for (datasetKey in dataFolders) {
         //loop over the interaction data in a folder.
-        interactionData = await pass1.firstLoop(
+        const interactionMetricList = await pass1.firstLoop(
           dataFolders[datasetKey].interactions,
           dataFolders[datasetKey].cleaner,
           dataFolders[datasetKey].documents
         );
 
-        combinedMetrics.push(...interactionData);
+        const metrics = pass1.addDatasetKeyToList(interactionMetricList, datasetKey);
+        combinedMetrics.push( ...metrics );
     
-        const normed = normalizeNumericObjectValues(interactionData)
+        const normed = normalizeNumericObjectValues(interactionMetricList)
         //save the data as a csv file.
-        saveJsonToCsvFile(datasetKey, interactionData);
+        saveJsonToCsvFile(datasetKey, interactionMetricList);
         saveJsonToCsvFile(datasetKey + "_norm", normed);
     }
 

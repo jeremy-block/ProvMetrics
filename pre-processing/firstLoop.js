@@ -79,5 +79,23 @@ async function firstLoop(pathToInteractionFiles, cleanerModulePath, pathToDocume
   }
   return output;
 }
+
+/**
+ *Takes a list of interactions metrics and adds a property called "dataset" to each file's metrics to aid in sorting and filtering data.
+ *
+ * @param {*} interactions List of interactionMetric objects
+ * @param {*} key The value for the "dataset" property
+ * @return {*} A modified list of interactionMetic objects with the new property.
+ */
+function addDatasetKeyToList(interactions, key) {
+  const updated = [];
+  for (interaction in interactions) {
+    updated.push({
+      ...interactions[interaction],
+      dataset: key,
+    });
+  }
+  return updated;
+}
     
-module.exports = { firstLoop }
+module.exports = { firstLoop, addDatasetKeyToList };
