@@ -1,5 +1,3 @@
-const divider = require("./divider")
-
 /**
  * 
  * @param {Object} countsObj - The object that has counts of some event
@@ -9,7 +7,7 @@ const divider = require("./divider")
 function countsToRatios(countsObj, divisor) {
     output = {}
     for (key in countsObj) {
-        output[key] = divider(countsObj[key], divisor)
+        output[key] = countsObj[key] / divisor;
     }
     return output
 }
