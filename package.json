@@ -3,6 +3,7 @@
     "child_process": "^1.0.2",
     "csv-parser": "^3.0.0",
     "csv-writer": "^1.6.0",
+    "luxon": "^3.4.3",
     "natural": "^6.5.0",
     "wordnet": "^2.0.0",
     "wordnet-db": "^3.1.14"

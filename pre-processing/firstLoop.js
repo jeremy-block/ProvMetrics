@@ -10,11 +10,12 @@ const searchMetrics = require("./searchMetrics");
  * @param {string} pathToInteractionFiles 
  * @returns An array of objects. one object for each file in the path provided.
  */
-async function firstLoop(pathToInteractionFiles, cleanerModulePath, pathToDocuments, debug=false) { 
+async function firstLoop(pathToInteractionFiles, cleanerModulePath, documents, debug=false) { 
   //Identify the list of file names to process in the folder provided to first Loop
   const fileNameList = reader.getFileNamesInFolder(pathToInteractionFiles);
   // console.log(fileNameList);
-  const datasetDocuments = reader.importJsonFile(pathToDocuments)  
+  const datasetDocuments = reader.importJsonFile(documents.datasetPath) 
+  documents.dataset = datasetDocuments
   //stub for output
   const output = []
   //loop over the files in the the spefified directory
@@ -31,6 +32,7 @@ async function firstLoop(pathToInteractionFiles, cleanerModulePath, pathToDocume
       //pre-process by cleaning up the keys.
       const cleaner = require("../"+cleanerModulePath);
       const interactionEvents = cleaner.clean(originalInteractionEvents);
+      if (debug) console.log("🚀 ~ file: firstLoop.js:34 ~ firstLoop ~ interactionEvents:", interactionEvents)
       //todo: add try/catch to ensure there are only .json interaction files to process.
       
     const [docTimeIDs, searchTimeTerms, interactionCounts] = interpreter.extractEvents(interactionEvents);
@@ -43,7 +45,7 @@ async function firstLoop(pathToInteractionFiles, cleanerModulePath, pathToDocume
     // Calculate search term things
     const searchTermSimilarity = (completedSearches) ? searchMetrics.calcRepeatedSearches(searchTimeTerms) : { "repeatedSeachCount": null, "repeatedSearchRatio": null };
     const searchPeriodicity = (completedSearches) ? searchMetrics.calculatePeriodicity(searchTimeTerms, totalDuration): null ;
-    const searchOverlapAndEfficency = (completedSearches) ? searchMetrics.calcOverlappingSearches(searchTimeTerms, docTimeIDs, datasetDocuments) : { "avgOverlap": null, "avgEfficency": null };
+    const searchOverlapAndEfficency = (completedSearches) ? searchMetrics.calcOverlappingSearches(searchTimeTerms, docTimeIDs, documents) : { "avgOverlap": null, "avgEfficency": null };
     // const  = (completedSearches) ? searchMetrics.searchEffiecincy(searchTimeTerms, datasetDocuments) : null;
     const searchSimilarity2 = (completedSearches) ? await searchMetrics.getSimilarityWordsProportion(searchTimeTerms) : null;
           
@@ -92,7 +94,7 @@ function addDatasetKeyToList(interactions, key) {
   for (interaction in interactions) {
     updated.push({
       ...interactions[interaction],
-      dataset: key,
+      section: key,
     });
   }
   return updated;

@@ -179,26 +179,40 @@ function calculatePeriodicity(timeIntervals, totalDuration, debug=false) {
 /**
  * Conducts a search through the array of document objects and returns the list of document names that would be returned for a search conducted on the dataset.
  * @param {String} term The Term to look for in the original document dataset
- * @param {Array of Object <documents>} documentCorpus The list of documents to search. By default this function searches the "contents" and "title" properties of a document
+ * @param {Object <documents, itentifyer, searchableDocProps>} documentCorpus The object containing a list of documents to search for, the id to record for matches and the properties to search through for matches.
  * @param {boolean} debug true to print logs
  * @returns a list of document IDs that would be returned for the search term.
  */
-function reverseSearch(term, documentCorpus, debug = false) {
+function reverseSearch(term, documents, debug = false) {
   // console.log("🚀 ~ file: searchMetrics.js:180 ~ reverseSearch ~ documentCorpus:", documentCorpus)
+  const documentCorpus = documents.dataset
+  const documentIdentifier = documents.identifier;
+  const documentPropertiesToExamine = documents.searchableDocProps
+
   const matchingObjects = [];
   term = term.replace(/\\/g, "\\\\"); // replace "\" characters that sometimes appear with nothing.
   const regex = new RegExp(term, "i"); // 'i' flag for case-insensitive matching
 
   for (const doc of documentCorpus) {
-    if (
-      // If the term is in the body or the title text
-      (doc.contents && regex.test(doc.contents.toLowerCase())) ||
-      (doc.title && regex.test(doc.title.toLowerCase()))
-    ) {
-      const docName = doc.id
+    // Initialize a flag to track if a match is found
+    let matchFound = false;
+
+    // Loop through the properties and check for a match
+    for (const prop of documentPropertiesToExamine) {
+      if (doc[prop] && regex.test(doc[prop].toLowerCase())) {
+        matchFound = true;
+        break; // If a match is found, exit the loop
+      }
+    }
+
+    // Check if a match was found
+    if (matchFound) {
+      const docName = doc[documentIdentifier];
+      if (debug) console.log("🚀 ~ file: searchMetrics.js:201 ~ reverseSearch ~ Document titled:",docName,"\tcontains the term",term);
       matchingObjects.push(docName);
     }
   }
+  if (debug && matchingObjects.length == 0) console.log("no documents contain the term ", term, "... at least not in these document properties we searched through:", documentPropertiesToExamine)
   return matchingObjects;
 }
 
@@ -238,11 +252,11 @@ function getDocNamesBetweenTimes(startTime, endTime, documentObj) {
  * 
  * @param {object <time:search>} searchObj object of searches with the timings of those searches as the keys
  * @param {object <time:docs>} documentObj object of document names with the timings of when those documents were opened as keys
- * @param {Array of object <documents>} investigationDataset array of document objects that are inspected. Passed through to the reverseSearch() function.
+ * @param {Array of object <documents>} documents object that contains the specificed properties for reverse search function. object contains the following properties: documentCorpus, documentIdentifier, and documentPropertiesToExamine
  * @param {boolean} debug flag to control the display of debug messages
  * @returns an object with two properties. avgOverlap is the average amount of overlap between a search being run and the number of documents explored. avgEfficency is the average number of documents returned for a search.
  */
-function calcOverlappingSearches(searchObj, documentObj, investigationDataset, debug = false) {
+function calcOverlappingSearches(searchObj, documentObj, documents, debug = false) {
   const times = ListOfObjectKeys(searchObj);
   if(debug) console.log("🚀 ~ file: searchMetrics.js ~ calcOverlappingSearches ~ times: Total Searches Complete", times.length)
   const docTimes = ListOfObjectKeys(documentObj)
@@ -274,10 +288,10 @@ function calcOverlappingSearches(searchObj, documentObj, investigationDataset, d
     
     //Get the search term conducted in this time period
     const term = searchObj[times[t]];
-    if (debug) console.log("🚀 ~ file: searchMetrics.js ~ calcOverlappingSearches ~ term:", term)
+    if (debug) console.log("🚀 ~ file: searchMetrics.js ~ calcOverlappingSearches ~ term searched for:", term)
     
     //Reverse the search and get a list of document names associated with the search term.
-    const searchResults = reverseSearch(term, investigationDataset);
+    const searchResults = reverseSearch(term, documents);
     if(debug) console.log("🚀 ~ file: searchMetrics.js ~ calcOverlappingSearches ~ searchResults:",searchResults.length,"Documents match a search for",("\'"+term+"\'."),"They are", searchResults)
 
     //compare the two lists of document ids

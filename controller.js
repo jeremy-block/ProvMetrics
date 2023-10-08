@@ -3,7 +3,7 @@ const saveJsonToCsvFile = require("./modules/saveJsonToCsvFile")
 const pass1 = require("./pre-processing/firstLoop")
 const { mergeCSVFiles } = require("./modules/mergeCSVFiles")
 
-const isTesting = true
+const isTesting = false
 let dataFolders = {}
 
 async function run() {
@@ -12,7 +12,11 @@ async function run() {
             testData: {
                 interactions: "testData/interactions/",
                 cleaner: "pre-processing/datatranslators/testData.js",
-                documents: "testData/documents/TestData-documents.json",
+                documents: {
+                    datasetPath: "testData/documents/TestData-documents.json", // Path to the dataset to do reverse search.
+                    identifier: "id", //the identifyer for a record in the documents dataset.
+                    searchableDocProps: ['contents","title'], // The list of properties in the document datasets to search through when doing a reverse search.
+                }
             }
         }
     } else {
@@ -20,17 +24,38 @@ async function run() {
             dataset1: {
                 interactions: "data/Dataset_1/User Interactions/",
                 cleaner: "pre-processing/datatranslators/dataset1.js",
-                documents: "data/Dataset_1/Documents/Documents_Dataset_1.json",
+                documents: {
+                    datasetPath: "data/Dataset_1/Documents/Documents_Dataset_1.json",
+                    identifier: "id",
+                    searchableDocProps: ["contents", "title"],
+                }
             },
             dataset2: {
                 interactions: "data/Dataset_2/User Interactions/",
                 cleaner: "pre-processing/datatranslators/dataset1.js",
-                documents: "data/Dataset_2/Documents/Documents_Dataset_2.json",
+                documents: {
+                    datasetPath: "data/Dataset_2/Documents/Documents_Dataset_2.json",
+                    identifier: "id",
+                    searchableDocProps: ["contents", "title"],
+                }
             },
             dataset3: {
                 interactions: "data/Dataset_3/User Interactions/",
                 cleaner: "pre-processing/datatranslators/dataset1.js",
-                documents: "data/Dataset_3/Documents/Documents_Dataset_3.json",
+                documents: {
+                    datasetPath: "data/Dataset_3/Documents/Documents_Dataset_3.json",
+                    identifier: "id",
+                    searchableDocProps: ["contents", "title"],
+                }
+            },
+            dataset4: {
+                interactions: "data/Dataset_4/JSONInteractions/",
+                cleaner: "pre-processing/datatranslators/dataset4.js",
+                documents: {
+                    datasetPath: "data/Dataset_4/Documents/Documents_Dataset_4.json",
+                    identifier: "conversationTitle",
+                    searchableDocProps: ["contents"], 
+                }
             },
         };
     }
@@ -41,7 +66,7 @@ async function run() {
         const interactionMetricList = await pass1.firstLoop(
           dataFolders[datasetKey].interactions,
           dataFolders[datasetKey].cleaner,
-          dataFolders[datasetKey].documents
+          dataFolders[datasetKey].documents,
         );
 
         const metrics = pass1.addDatasetKeyToList(interactionMetricList, datasetKey);
