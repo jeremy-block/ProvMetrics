@@ -10,7 +10,7 @@ const searchMetrics = require("./searchMetrics");
  * @param {string} pathToInteractionFiles 
  * @returns An array of objects. one object for each file in the path provided.
  */
-async function firstLoop(pathToInteractionFiles, cleanerModulePath, documents, debug=false) { 
+async function firstLoop(datasetKey, pathToInteractionFiles, cleanerModulePath, documents, debug=false) { 
   //Identify the list of file names to process in the folder provided to first Loop
   const fileNameList = reader.getFileNamesInFolder(pathToInteractionFiles);
   // console.log(fileNameList);
@@ -51,7 +51,8 @@ async function firstLoop(pathToInteractionFiles, cleanerModulePath, documents, d
           
     //append the file name so it's included with the output and spread the intereaction counts into the object too
     const totalInteraction = {
-      filename: filename,
+      session: filename,
+      section: datasetKey,
       ...renamer.renameKeysWithCount(interactionCounts),
       ...renamer.renameKeysWithRatio(interactionRatios),
       total_interaction_count: interactionEvents.length,
