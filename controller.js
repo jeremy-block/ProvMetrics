@@ -58,6 +58,15 @@ async function run() {
           searchableDocProps: ["contents"],
         },
       },
+      dataset5: {
+        interactions: "data/Dataset_5/interactions/",
+        cleaner: "pre-processing/datatranslators/dataset5.js",
+        documents: {
+          datasetPath: "data/Dataset_5/documents.json",
+          identifier: "name",
+          searchableDocProps: ["type", "title", "body"],
+        },
+      },
     };
   }
 

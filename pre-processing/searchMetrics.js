@@ -184,7 +184,8 @@ function calculatePeriodicity(timeIntervals, totalDuration, debug=false) {
  * @returns a list of document IDs that would be returned for the search term.
  */
 function reverseSearch(term, documents, debug = false) {
-  // console.log("🚀 ~ file: searchMetrics.js:180 ~ reverseSearch ~ documentCorpus:", documentCorpus)
+  // console.log("🚀 ~ file: searchMetrics.js:187 ~ reverseSearch ~ term:", term)
+  // console.log("🚀 ~ file: searchMetrics.js:180 ~ reverseSearch ~ documents:", documents)
   const documentCorpus = documents.dataset
   const documentIdentifier = documents.identifier;
   const documentPropertiesToExamine = documents.searchableDocProps

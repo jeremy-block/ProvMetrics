@@ -27,6 +27,20 @@ function correctTimes(eventLogs, timeFormat) {
   });
 }
 
+/**
+ * Sets the event log times to be relative to the first event. Subtracts the start time from all other events in a session.
+ * @param {Array<Object>} eventLogs - The list of events
+ * @returns time adjusted listed of events.
+ */
+function correctStartTime(eventLogs) {
+  const startTime = eventLogs[0].time;
+  return eventLogs.map((eventlog) => {
+    eventlog.time = eventlog.time - startTime;
+    return eventlog;
+  })
+}
+
 module.exports = {
   correctTimes,
+  correctStartTime,
 };
