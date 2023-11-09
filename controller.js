@@ -22,7 +22,7 @@ async function run() {
     };
   } else {
     dataFolders = {
-      dataset1: {
+      "Arms Dealing": {
         interactions: "data/Dataset_1/User Interactions/",
         cleaner: "pre-processing/datatranslators/dataset1.js",
         documents: {
@@ -31,7 +31,7 @@ async function run() {
           searchableDocProps: ["contents", "title"],
         },
       },
-      dataset2: {
+      "Terrorist Activites": {
         interactions: "data/Dataset_2/User Interactions/",
         cleaner: "pre-processing/datatranslators/dataset1.js",
         documents: {
@@ -40,7 +40,7 @@ async function run() {
           searchableDocProps: ["contents", "title"],
         },
       },
-      dataset3: {
+      "Company Kidnapping": {
         interactions: "data/Dataset_3/User Interactions/",
         cleaner: "pre-processing/datatranslators/dataset1.js",
         documents: {
@@ -49,7 +49,7 @@ async function run() {
           searchableDocProps: ["contents", "title"],
         },
       },
-      dataset4: {
+      "Panda Jam": {
         interactions: "data/Dataset_4/JSONInteractions/",
         cleaner: "pre-processing/datatranslators/dataset4.js",
         documents: {
@@ -58,7 +58,7 @@ async function run() {
           searchableDocProps: ["contents"],
         },
       },
-      dataset5: {
+      "Insider Attack": {
         interactions: "data/Dataset_5/interactions/",
         cleaner: "pre-processing/datatranslators/dataset5.js",
         documents: {
