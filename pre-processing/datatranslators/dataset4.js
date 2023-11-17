@@ -1,5 +1,5 @@
 const { correctKeys } = require("../../modules/correctKeys");
-const { correctTimes } = require("../../modules/correctTimes")
+const { correctTimes, correctStartTime } = require("../../modules/correctTimes")
 const { correctTypes } = require("../../modules/correctTypes");
 const { correctDocIDs } = require("../../modules/correctDocIDs");
 const { extractEvents } = require("../../modules/interpreter");
@@ -29,6 +29,7 @@ const afterID = docIDFormat[1]
 function clean(interactions) {
   interactions = correctKeys(interactions, interactionTranslation);
   interactions = correctTimes(interactions, timeFormat)
+  interactions = correctStartTime(interactions);
   interactions = correctTypes(interactions, interactionTypes)
   interactions = correctDocIDs(interactions, beforeID, afterID)
   return interactions;
