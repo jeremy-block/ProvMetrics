@@ -40,7 +40,23 @@ function correctStartTime(eventLogs) {
   })
 }
 
+/**
+ * Scales the event log times to a different amount (often used to correct milliseconds vs seconds, etc.)
+ * @param {Array<Objects>} eventLogs The list of events (must have property 'time' in each event)
+ * @param {Number} scaler The amount to scale by
+ * @param {Boolean} reduceTime Truth value used to either devide (if true) or multiply (if false) the time values.
+ * @default returns Miliseconds to Seconds
+ * @returns Corrected array of events where the time property has been scaled appropriotely.
+ */
+function scaleTime(eventLogs, scaler = 1000, reduceTime = true ) {
+  return eventLogs.map((event) => {
+    reduceTime ? event.time = event.time / scaler : event.time = event.time * scaler
+    return event
+  })
+}
+
 module.exports = {
   correctTimes,
   correctStartTime,
+  scaleTime,
 };

@@ -1,5 +1,5 @@
 const { correctKeys } = require("../../modules/correctKeys");
-const { correctStartTime } = require("../../modules/correctTimes");
+const { correctStartTime, scaleTime } = require("../../modules/correctTimes");
 const { correctTypes } = require("../../modules/correctTypes");
 
 // Object of expected keys and the properties typically found in the interaction file
@@ -20,6 +20,7 @@ const interactionTypes = {
 function clean(interactions) {
   interactions = correctKeys(interactions, interactionTranslation);
   interactions = correctStartTime(interactions)
+  interactions = scaleTime(interactions, 1000, true);
   interactions = correctTypes(interactions, interactionTypes)
   return interactions;
 }
