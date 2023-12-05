@@ -71,9 +71,10 @@ async function run() {
   }
 
   const combinedMetrics = [];
+  const combinedMetricSegments = [];
   for (datasetKey in dataFolders) {
     //loop over the interaction data in a folder.
-    const interactionMetricList = await pass1.firstLoop(
+    const [interactionMetricList, interactionMetricListSegmented] = await pass1.firstLoop(
       datasetKey,
       dataFolders[datasetKey].interactions,
       dataFolders[datasetKey].cleaner,
@@ -88,6 +89,9 @@ async function run() {
     //save the data as a csv file.
     saveJsonToCsvFile(datasetKey, interactionMetricList);
     saveJsonToCsvFile(datasetKey + "_norm", normed);
+
+    combinedMetricSegments.push(...interactionMetricListSegmented);
+    saveJsonToCsvFile("metricSegments/"+datasetKey+"_seg", interactionMetricListSegmented)
   }
 
   // Save a csv file with all the metrics included.
@@ -95,7 +99,11 @@ async function run() {
   saveJsonToCsvFile("combinedObj", combinedMetrics)
   saveJsonToCsvFile("combined_Normed", combinedMetricsNormed)
 
-  replaceEmptyCellsWithZero("output/combinedObj.csv", "output/fixed.csv")
+  const combinedMetricSegmmentsNormed = normalizeNumericObjectValues(combinedMetricSegments);
+  saveJsonToCsvFile("metricSegments/combinedObj_seg", combinedMetricSegmmentsNormed);
+
+  replaceEmptyCellsWithZero("output/combinedObj.csv", "output/fixed.csv");
+  replaceEmptyCellsWithZero("output/metricSegments/combinedObj_seg.csv", "output/metricSegments/fixed_seg.csv");
 
 //   Alternative Saving process where the completed CSVs are loaded and saved using the merge CSV module.
   const inputFiles = [];

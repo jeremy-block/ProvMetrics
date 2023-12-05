@@ -19,7 +19,7 @@ function extractEvents(objects) {
     // Create a new object based on objects
     const newObj = { ...objects };
 
-    return newObj;
+    return [ newObj, newObj, newObj ];
   } else {
 
     for (const obj of objects) {
